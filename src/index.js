@@ -19,6 +19,7 @@ import requireFresh from 'import-fresh'
 import objectHash from 'object-hash'
 import * as svelte from 'prettier-plugin-svelte'
 import * as astro from 'prettier-plugin-astro'
+import * as melody from 'prettier-plugin-twig-melody'
 import lineColumn from 'line-column'
 import jsesc from 'jsesc'
 import escalade from 'escalade/sync'
@@ -295,6 +296,21 @@ function transformGlimmer(ast, { env }) {
   })
 }
 
+function transformMelody(ast, { env, changes }) {
+  visit(ast, {
+    Attribute(node) {
+      if (!node.value) return;
+      if (['class', 'className'].includes(node.name.name)) {
+        if (isStringLiteral(node.value)) {
+          node.value = sortClasses(node.value, { env });
+          // node.value = 
+          // sortStringLiteral(node.value, { env })
+        }
+      }
+    },
+  })
+}
+
 function sortStringLiteral(node, { env }) {
   let result = sortClasses(node.value, { env })
   let didChange = result !== node.value
@@ -448,22 +464,23 @@ export const parsers = {
     transformSvelte(ast.html, { env, changes })
     ast.changes = changes
   }),
-  astro: createParser(astro.parsers.astro, transformAstro)
+  astro: createParser(astro.parsers.astro, transformAstro),
+  melody: createParser(melody.parsers.melody, transformMelody),
 }
 
 function transformAstro(ast, { env, changes }) {
-  if (ast.type === "element") {
+  if (ast.type === 'element') {
     for (let attr of ast.attributes ?? []) {
-      if (attr.name === "class" && attr.type === "attribute" && attr.kind === "quoted") {
+      if (attr.name === 'class' && attr.type === 'attribute' && attr.kind === 'quoted') {
         attr.value = sortClasses(attr.value, {
-          env
-        });
+          env,
+        })
       }
     }
   }
 
   for (let child of ast.children ?? []) {
-    transformAstro(child, { env, changes });
+    transformAstro(child, { env, changes })
   }
 }
 

@@ -6,6 +6,7 @@ esbuild.build({
   entryPoints: [path.resolve(__dirname, './src/index.js')],
   outfile: path.resolve(__dirname, './dist/index.js'),
   bundle: true,
+  keepNames: true,
   platform: 'node',
   target: 'node12.13.0',
   external: ['prettier', 'svelte'],

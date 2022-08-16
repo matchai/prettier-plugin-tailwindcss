@@ -39,6 +39,7 @@
     "prettier": "^2.5.1",
     "prettier-plugin-astro": "^0.4.1",
     "prettier-plugin-svelte": "^2.7.0",
+    "prettier-plugin-twig-melody": "^0.4.6",
     "recast": "^0.20.5",
     "rimraf": "^3.0.2",
     "svelte": "^3.46.4",
